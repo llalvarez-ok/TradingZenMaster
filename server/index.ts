@@ -79,9 +79,9 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Escuchar en el puerto 5000
-  const port = 5000;
-  server.listen(port, '127.0.0.1', () => {
-    log(`Servidor escuchando en http://127.0.0.1:${port}`);
-  });
+  // Escuchar en el puerto 5001
+  const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => {
+  console.log(`Servidor escuchando en http://127.0.0.1:${PORT}`);
+});
 })();

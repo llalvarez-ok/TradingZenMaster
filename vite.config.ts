@@ -28,4 +28,7 @@ export default defineConfig({
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
+  server: {
+    port: 3001, // 👈 Nuevo puerto para evitar conflicto con el backend (5000)
+  },
 });
