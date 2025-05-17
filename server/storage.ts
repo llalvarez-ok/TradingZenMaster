@@ -15,6 +15,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByDiscordId(discordId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserBroker(userId: number, brokerNombre: string, brokerCuenta: string): Promise<User | undefined>;
   
   // Cursos
   getCourse(id: number): Promise<Course | undefined>;
@@ -63,6 +64,18 @@ export class DatabaseStorage implements IStorage {
       .values(insertUser)
       .returning();
     return user;
+  }
+  
+  async updateUserBroker(userId: number, brokerNombre: string, brokerCuenta: string): Promise<User | undefined> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        brokerNombre,
+        brokerCuenta
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return updatedUser;
   }
   
   // Cursos

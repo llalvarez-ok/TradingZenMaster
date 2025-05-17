@@ -1,10 +1,78 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
+import passport from "./auth";
 import { storage } from "./storage";
 import { insertUserSchema, insertCourseSchema, insertTestimonialSchema, insertEnrollmentSchema } from "@shared/schema";
 import { ZodError } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Rutas de autenticación con Discord
+  app.get("/auth/discord", passport.authenticate("discord"));
+
+  app.get("/auth/discord/callback", 
+    passport.authenticate("discord", { 
+      failureRedirect: "/?auth_error=true"
+    }),
+    (req, res) => {
+      // Redirigir al formulario de broker si es un nuevo usuario
+      if ((req.user as any)?.brokerNombre === null || (req.user as any)?.brokerCuenta === null) {
+        res.redirect("/complete-profile");
+      } else {
+        res.redirect("/");
+      }
+    }
+  );
+
+  app.get("/api/auth/status", (req, res) => {
+    if (req.isAuthenticated()) {
+      // No devolver la contraseña
+      const { password, ...user } = req.user as any;
+      res.json({ authenticated: true, user });
+    } else {
+      res.json({ authenticated: false });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.logout((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Error al cerrar sesión" });
+      }
+      res.json({ success: true });
+    });
+  });
+
+  // Ruta para completar perfil de broker
+  app.post("/api/users/complete-profile", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ error: "No autenticado" });
+      }
+
+      const userId = (req.user as any).id;
+      const { brokerNombre, brokerCuenta } = req.body;
+
+      if (!brokerNombre || !brokerCuenta) {
+        return res.status(400).json({ error: "Información del broker requerida" });
+      }
+
+      // Actualizar perfil del usuario con información del broker
+      // Nota: Necesitamos implementar esta función en storage.ts
+      const updatedUser = await storage.updateUserBroker(userId, brokerNombre, brokerCuenta);
+      
+      if (!updatedUser) {
+        return res.status(500).json({ error: "Error al actualizar el perfil" });
+      }
+
+      // No devolver la contraseña
+      const { password, ...userWithoutPassword } = updatedUser;
+      return res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error al completar el perfil:", error);
+      return res.status(500).json({ error: "Error del servidor" });
+    }
+  });
+
   // API de usuarios
   app.get("/api/users/:id", async (req: Request, res: Response) => {
     try {
