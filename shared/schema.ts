@@ -12,6 +12,14 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   telefono: text("telefono"),
   experiencia: text("experiencia").default("principiante"),
+  // Campos para broker
+  brokerNombre: text("broker_nombre"),
+  brokerCuenta: text("broker_cuenta"),
+  // Campos para integración con Discord
+  discordId: text("discord_id"),
+  discordUsername: text("discord_username"),
+  // Autenticación por Discord
+  authDiscord: boolean("auth_discord").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -80,6 +88,11 @@ export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   telefono: true,
   experiencia: true,
+  brokerNombre: true,
+  brokerCuenta: true,
+  discordId: true,
+  discordUsername: true,
+  authDiscord: true,
 });
 
 export const insertCourseSchema = createInsertSchema(courses).pick({
