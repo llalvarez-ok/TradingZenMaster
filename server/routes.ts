@@ -49,7 +49,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "No autenticado" });
       }
 
-      const userId = (req.user as any).id;
+      // Para MongoDB, usamos _id en lugar de id
+      const userId = (req.user as any)._id || (req.user as any).id;
       const { brokerNombre, brokerCuenta } = req.body;
 
       if (!brokerNombre || !brokerCuenta) {
@@ -57,7 +58,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Actualizar perfil del usuario con información del broker
-      // Nota: Necesitamos implementar esta función en storage.ts
       const updatedUser = await storage.updateUserBroker(userId, brokerNombre, brokerCuenta);
       
       if (!updatedUser) {
@@ -76,11 +76,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API de usuarios
   app.get("/api/users/:id", async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.id);
-      if (isNaN(userId)) {
-        return res.status(400).json({ error: "ID de usuario inválido" });
-      }
-
+      const userId = req.params.id;
+      
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ error: "Usuario no encontrado" });
@@ -159,11 +156,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/courses/:id", async (req: Request, res: Response) => {
     try {
-      const courseId = parseInt(req.params.id);
-      if (isNaN(courseId)) {
-        return res.status(400).json({ error: "ID de curso inválido" });
-      }
-
+      const courseId = req.params.id;
+      
       const course = await storage.getCourse(courseId);
       if (!course) {
         return res.status(404).json({ error: "Curso no encontrado" });
@@ -218,11 +212,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API de inscripciones
   app.get("/api/enrollments/user/:userId", async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.userId);
-      if (isNaN(userId)) {
-        return res.status(400).json({ error: "ID de usuario inválido" });
-      }
-
+      const userId = req.params.userId;
+      
       const enrollments = await storage.getUserEnrollments(userId);
       return res.json(enrollments);
     } catch (error) {

@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { Strategy as DiscordStrategy, Profile as DiscordProfile } from 'passport-discord';
-import { storage } from './storage';
-import { InsertUser, User } from '@shared/schema';
+import { storage } from './mongoStorage';
+import { InsertUser, User } from '../shared/mongoSchema';
 
 // Asegurar que las variables de entorno estén disponibles
 if (!process.env.DISCORD_CLIENT_ID || !process.env.DISCORD_CLIENT_SECRET || !process.env.DISCORD_CALLBACK_URL) {
@@ -34,9 +34,9 @@ passport.use(new DiscordStrategy({
         discordId: profile.id,
         discordUsername: profile.username,
         // Estos campos serán completados después
-        brokerNombre: null,
-        brokerCuenta: null,
-        telefono: null,
+        brokerNombre: "",
+        brokerCuenta: "",
+        telefono: "",
         experiencia: 'principiante'
       };
       
@@ -54,10 +54,12 @@ passport.use(new DiscordStrategy({
 
 // Serializar y deserializar usuario para la sesión
 passport.serializeUser((user: User, done) => {
-  done(null, user.id);
+  // Para MongoDB usamos _id en lugar de id
+  const userId = (user as any)._id || user.id;
+  done(null, userId);
 });
 
-passport.deserializeUser(async (id: number, done) => {
+passport.deserializeUser(async (id: string, done) => {
   try {
     const user = await storage.getUser(id);
     done(null, user);
