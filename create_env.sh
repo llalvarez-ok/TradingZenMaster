@@ -1,18 +1,14 @@
 #!/bin/bash
 
-# Crear archivo .env con las variables de entorno actuales
+# Crear archivo .env con las variables de entorno para MongoDB
 echo "# Archivo .env generado automáticamente" > .env
 echo "# Fecha de generación: $(date)" >> .env
 echo "" >> .env
 
-# Variables de base de datos
-echo "# Conexión a la base de datos" >> .env
-echo "DATABASE_URL=${DATABASE_URL}" >> .env
-echo "PGUSER=${PGUSER}" >> .env
-echo "PGPASSWORD=${PGPASSWORD}" >> .env
-echo "PGHOST=${PGHOST}" >> .env
-echo "PGPORT=${PGPORT}" >> .env
-echo "PGDATABASE=${PGDATABASE}" >> .env
+# Variables de MongoDB
+echo "# Conexión a MongoDB" >> .env
+echo "MONGODB_URI=mongodb://localhost:27017/trading_zen" >> .env
+echo "MONGODB_DB_NAME=trading_zen" >> .env
 echo "" >> .env
 
 # Variables de Discord
@@ -26,4 +22,4 @@ echo "" >> .env
 echo "# Configuración de la aplicación" >> .env
 echo "NODE_ENV=development" >> .env
 
-echo "Archivo .env creado correctamente"
+echo "Archivo .env para MongoDB creado correctamente"

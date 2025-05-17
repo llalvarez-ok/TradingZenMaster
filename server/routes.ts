@@ -1,8 +1,8 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import passport from "./auth";
-import { storage } from "./storage";
-import { insertUserSchema, insertCourseSchema, insertTestimonialSchema, insertEnrollmentSchema } from "@shared/schema";
+import { storage } from "./mongoStorage";
+import { insertUserSchema, insertCourseSchema, insertTestimonialSchema, insertEnrollmentSchema } from "../shared/mongoSchema";
 import { ZodError } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {

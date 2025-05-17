@@ -3,6 +3,7 @@ import session from "express-session";
 import passport from "./auth";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { connectToDatabase } from "./mongodb";
 
 const app = express();
 app.use(express.json());
@@ -51,6 +52,15 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Conectar a MongoDB
+  try {
+    await connectToDatabase();
+    log("Conexión a MongoDB establecida correctamente");
+  } catch (error) {
+    log("Error al conectar a MongoDB: " + error);
+    process.exit(1);
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
