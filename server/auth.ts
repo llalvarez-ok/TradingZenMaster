@@ -1,7 +1,7 @@
 import passport from 'passport';
-import { Strategy as DiscordStrategy } from 'passport-discord';
+import { Strategy as DiscordStrategy, Profile as DiscordProfile } from 'passport-discord';
 import { storage } from './storage';
-import { InsertUser } from '@shared/schema';
+import { InsertUser, User } from '@shared/schema';
 
 // Asegurar que las variables de entorno estén disponibles
 if (!process.env.DISCORD_CLIENT_ID || !process.env.DISCORD_CLIENT_SECRET || !process.env.DISCORD_CALLBACK_URL) {
@@ -17,7 +17,7 @@ passport.use(new DiscordStrategy({
   clientSecret: process.env.DISCORD_CLIENT_SECRET || '',
   callbackURL: process.env.DISCORD_CALLBACK_URL || '',
   scope: scopes
-}, async (accessToken, refreshToken, profile, done) => {
+}, async (accessToken: string, refreshToken: string, profile: DiscordProfile, done: (error: any, user?: any) => void) => {
   try {
     // Buscar si el usuario ya existe en la base de datos
     let user = await storage.getUserByDiscordId(profile.id);
@@ -53,7 +53,7 @@ passport.use(new DiscordStrategy({
 }));
 
 // Serializar y deserializar usuario para la sesión
-passport.serializeUser((user: any, done) => {
+passport.serializeUser((user: User, done) => {
   done(null, user.id);
 });
 
