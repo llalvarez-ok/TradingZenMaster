@@ -13,6 +13,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByDiscordId(discordId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   
   // Cursos
@@ -48,6 +49,11 @@ export class DatabaseStorage implements IStorage {
   
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+  
+  async getUserByDiscordId(discordId: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.discordId, discordId));
     return user || undefined;
   }
 
