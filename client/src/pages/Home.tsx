@@ -137,7 +137,7 @@ const Home = () => {
                     alt="Student avatar" 
                   />
                 </div>
-                <p>+3,500 estudiantes ya confían en nosotros</p>
+                <p>+1,500 estudiantes ya confían en nosotros</p>
               </div>
             </div>
             <div className="lg:w-1/2" style={{ animation: 'fadeIn 0.6s ease-out forwards', animationDelay: '0.5s' }}>

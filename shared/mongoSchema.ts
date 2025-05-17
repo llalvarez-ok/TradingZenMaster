@@ -96,8 +96,6 @@ const TestimonialSchema = new Schema<ITestimonial>({
 });
 
 // Índices para mejorar el rendimiento
-UserSchema.index({ username: 1 });
-UserSchema.index({ email: 1 });
 UserSchema.index({ discordId: 1 });
 CourseSchema.index({ isPremium: 1 });
 EnrollmentSchema.index({ userId: 1 });
